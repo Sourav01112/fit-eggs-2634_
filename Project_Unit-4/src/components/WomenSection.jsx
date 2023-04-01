@@ -72,6 +72,8 @@ export const WomenSection = () => {
 
     const toast = useToast()
 
+    // DO with Axios
+
     const FetchAndRender = async (page) => {
 
         try {
@@ -184,10 +186,10 @@ export const WomenSection = () => {
                                 </h2>
                                 <AccordionPanel pb={4}>
                                     <Input></Input>
-                                    {data?.map((ele)=>{
+                                    {data?.map((ele) => {
                                         return <Checkbox>{ele.category}</Checkbox>
                                     })}
-                                   
+
                                 </AccordionPanel>
                             </AccordionItem>
 
