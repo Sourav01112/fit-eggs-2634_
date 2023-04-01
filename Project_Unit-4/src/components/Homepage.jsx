@@ -5,6 +5,7 @@ import { HomeCard } from './HomeCard'
 import { Link } from 'react-router-dom'
 import { ChevronLeftIcon, ChevronRightIcon, AddIcon, MinusIcon } from "@chakra-ui/icons";
 import { Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Divider, Text } from '@chakra-ui/react'
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { Footer } from './Footer'
 
 import { Box, Image, Flex, IconButton, Heading } from "@chakra-ui/react";
@@ -43,6 +44,27 @@ export const Homepage = () => {
     };
 
 
+    //****************  Scroll to Top & Bottom  **************
+    const [isTop, setIsTop] = useState(true);
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+        setIsTop(true);
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth"
+        });
+        setIsTop(false);
+    };
+    //****************  Scroll to Top & Bottom ENDS **************
+
+
     return (
         <div>
 
@@ -73,7 +95,7 @@ export const Homepage = () => {
                 <Link to='/women/t-shirts'>
                     <HomeCard src={`https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/product-images/WebsiteTiles_Big_Women-version5.jpg?format=webp&w=480&dpr=1.4`} />
                 </Link>
-                
+
                 <HomeCard src={`https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/product-images/WebsiteTiles_Big_Women-version4.jpg?format=webp&w=480&dpr=1.4`} />
             </div>
 
@@ -157,6 +179,14 @@ export const Homepage = () => {
 
             {/************ FOOTER *********/}
             <Footer />
+            <Box position="fixed" bottom="2rem" right="2rem">
+                {isTop ? (
+                    <FaArrowCircleDown size={30} onClick={scrollToBottom} />
+                ) : (
+                    <FaArrowCircleUp size={30} onClick={scrollToTop} />
+                )}
+            </Box>
+
 
         </div>
     )

@@ -1,7 +1,8 @@
 import { useState, useEffect, useReducer } from 'react'
 import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton,
 } from '@chakra-ui/react'
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { AddIcon } from '@chakra-ui/icons'
 import { PageSkeleton } from './PageSkeleton'
 import { Pagination } from './Pagination'
@@ -64,7 +65,6 @@ export const WomenSection = () => {
 
     const handleClickBtn = () => {
         setIsLoading(true);
-
         setTimeout(() => {
             setIsLoading(false);
         }, 1000); // 10 seconds in milliseconds
@@ -81,7 +81,8 @@ export const WomenSection = () => {
             let res = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women?_limit=${limit}&_page=${page}`)
             let out = await res.json()
             // console.log(out)
-            let count = Number(res.headers.get("X-Total-Count"))
+            let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
+
             setTotalCount(count)
             // console.log(count)
             dispatch({ type: "FETCH_SUCCESS", payload: out })
@@ -105,7 +106,31 @@ export const WomenSection = () => {
         setPage(page)
     }
 
-    //***************** Pagination **************/
+    //***************** Pagination ENDS**************/
+
+
+    //****************  Scroll to Top & Bottom  **************
+    const [isTop, setIsTop] = useState(true);
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+        setIsTop(true);
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth"
+        });
+        setIsTop(false);
+    };
+    //****************  Scroll to Top & Bottom ENDS **************
+
+
+
 
     if (loading) {
         return (
@@ -187,7 +212,7 @@ export const WomenSection = () => {
                                 <AccordionPanel pb={4}>
                                     <Input></Input>
                                     {data?.map((ele) => {
-                                        return <Checkbox>{ele.category}</Checkbox>
+                                        return <Checkbox key={ele.id}>{ele.category}</Checkbox>
                                     })}
 
                                 </AccordionPanel>
@@ -336,6 +361,18 @@ export const WomenSection = () => {
                     <Pagination page={page} totalCount={totalCount} onChange={handlePageChange} limit={limit} />
 
                 </Box>
+
+
+                <Box position="fixed" bottom="2rem" right="2rem">
+                    {isTop ? (
+                        <FaArrowCircleDown size={30} onClick={scrollToBottom} />
+                    ) : (
+                        <FaArrowCircleUp size={30} onClick={scrollToTop} />
+                    )}
+                </Box>
+
+
+
             </Box >
         )
     }

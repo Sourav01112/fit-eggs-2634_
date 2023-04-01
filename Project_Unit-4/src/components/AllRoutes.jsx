@@ -5,6 +5,7 @@ import { MenSection } from './MenSection'
 import { Homepage } from './Homepage'
 import { Login } from './Login'
 import { WomenSingleProductPage } from './WomenSingleProductPage'
+import { PrivateRoute } from './AuthContext/PrivateRoute'
 
 export const AllRoutes = () => {
     return (
@@ -12,7 +13,12 @@ export const AllRoutes = () => {
             <Routes>
                 <Route path='/' element={<Homepage />} />
                 <Route path='/women/t-shirts' element={<WomenSection />} />
-                <Route path='/women/products/t-shirts/:id' element={<WomenSingleProductPage />} />
+                <Route path='/women/products/t-shirts/:id' element={
+                    <PrivateRoute>
+                        <WomenSingleProductPage />
+                    </PrivateRoute>
+
+                } />
 
                 <Route path='/men' element={<MenSection />} />
                 <Route path='/men' element={<MenSection />} />

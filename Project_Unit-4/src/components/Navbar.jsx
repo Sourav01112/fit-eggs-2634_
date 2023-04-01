@@ -11,7 +11,6 @@ import {
     PopoverAnchor, Portal
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { Search2Icon } from "@chakra-ui/icons";
 import logo from '../assets/The Amazing.png'
 import { Navigate } from "react-router-dom";
 import house from '../assets/house.svg'
@@ -32,11 +31,10 @@ export const Navbar = () => {
         setShowBox(false);
     };
 
-
     return (
 
-        <Box>
-            <Box>
+        <Box >
+            <Box >
                 {showBox && (
                     <Flex alignItems="center" backgroundColor="black">
                         <Box flex={1}>
@@ -90,9 +88,8 @@ export const Navbar = () => {
                 </Flex>
             </Box>
 
-            <Box>
 
-
+            <Box >
                 <Flex bg='white' color="black" p="2" marginLeft={'90px'} style={{ justifyContent: 'space-evenly', }}  >
 
 
@@ -147,7 +144,7 @@ export const Navbar = () => {
                             <Portal >
                                 <PopoverContent width='180px'>
                                     <PopoverArrow />
-                                    <PopoverHeader>Hello, {user?.name}</PopoverHeader>
+                                    <PopoverHeader>Hello {user?.name}</PopoverHeader>
                                     <PopoverCloseButton />
                                     <PopoverBody>
                                         <Button backgroundColor='#8BC34A' width='70px' height='35px' color='white'
