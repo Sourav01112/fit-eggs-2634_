@@ -1,6 +1,6 @@
 import { useState, useEffect, useReducer } from 'react'
 import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton,
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton, RadioGroup
 } from '@chakra-ui/react'
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { AddIcon } from '@chakra-ui/icons'
@@ -41,6 +41,8 @@ const reducer = (state, action) => {
         }
     }
 }
+
+
 const inState = {
     loading: false,
     data: [],
@@ -56,10 +58,12 @@ export const WomenSection = () => {
     const [limit, setLimit] = useState(8)
     const [price, setPrice] = useState(422);
     const [state, dispatch] = useReducer(reducer, inState)
+    const [product, setProduct] = useState([])
 
-    const handleSliderChange = (value) => {
-        setPrice(value);
-    };
+
+    // const handleSliderChange = (value) => {
+    //     setPrice(value);
+    // };
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -80,6 +84,7 @@ export const WomenSection = () => {
             dispatch({ type: "FETCH_LOADING" })
             let res = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women?_limit=${limit}&_page=${page}`)
             let out = await res.json()
+            setProduct(out)
             // console.log(out)
             let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
 
@@ -129,8 +134,81 @@ export const WomenSection = () => {
     };
     //****************  Scroll to Top & Bottom ENDS **************
 
+    // *****************SORT - FILTER *********************
 
 
+
+
+    const reducer1 = (state1, action1) => {
+        switch (action1.type) {
+            case "productsCheck": {
+                return {
+                    ...state1,
+                    productsCheck: action1.payload
+                }
+            }
+            case "UPDATE_PRICE":
+                return { ...state1, price: action1.payload };
+            case 'SORT_BY_PRICE':
+                const SoryByPrice = action1.payload;
+                let sortedProducts = [...state1.products];
+                if (SoryByPrice === 'LOW_TO_HIGH') {
+                    sortedProducts.sort((a, b) => a.price - b.price);
+                } else if (SoryByPrice === 'HIGH_TO_LOW') {
+                    sortedProducts.sort((a, b) => b.price - a.price);
+                }
+                return { ...state1, SoryByPrice: SoryByPrice, products: sortedProducts };
+            default: {
+                // throw new Error()
+                console.log(`Action type is 404`)
+                return state1
+            }
+        }
+    }
+
+    const initialState = {
+        productsCheck: false,
+        price: 422,
+        SoryByPrice: null
+    }
+
+    const [state1, dispatch1] = useReducer(reducer1, initialState)
+    const [submitted, setSubmit] = useState([])
+    const [sortOption, setSortOption] = useState("priceAsc");
+
+    const handleSortByPriceChange = (event) => {
+        const SoryByPrice = event.target.value;
+        dispatch({ type: 'SORT_BY_PRICE', payload: SoryByPrice });
+    };
+
+    function handleSliderChange(value) {
+        dispatch({ type: "UPDATE_PRICE", payload: value });
+    }
+    const handleFunctionality = (e) => {
+        e.preventDefault()
+        setSubmit([...submitted, state1])
+        console.log(submitted)
+    }
+
+    function sortProductsByPriceAscending() {
+        const sortedProducts = [...product].sort((a, b) => a.price - b.price);
+        setProduct(sortedProducts);
+    }
+
+    function sortProductsByPriceDescending() {
+        const sortedProducts = [...product].sort((a, b) => b.price - a.price);
+        setProduct(sortedProducts);
+    }
+
+
+    function handleSortOptionChange(value) {
+        // const value = event.target?.checked
+        setSortOption(value);
+
+    }
+
+
+    // *****************SORT - FILTER ENDS*********************/*  */
 
     if (loading) {
         return (
@@ -198,142 +276,171 @@ export const WomenSection = () => {
 
 
                     >
-                        <Accordion allowMultiple>
-                            {/************** BY PRODUCTS **************/}
-                            <AccordionItem>
-                                <h2>
-                                    <AccordionButton>
-                                        <Box as="span" flex='1' textAlign='left'>
-                                            PRODUCTS
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                </h2>
-                                <AccordionPanel pb={4}>
-                                    <Input></Input>
-                                    {data?.map((ele) => {
-                                        return <Checkbox key={ele.id}>{ele.category}</Checkbox>
-                                    })}
-
-                                </AccordionPanel>
-                            </AccordionItem>
-
-                            {/************** BY THEMES **************/}
-
-                            <AccordionItem>
-                                <h2>
-                                    <AccordionButton>
-                                        <Box as="span" flex='1' textAlign='left'>
-                                            THEMES
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                </h2>
-                                <AccordionPanel pb={4}>
-                                    <Input></Input>
-                                    <Checkbox >
-                                        Checkbox Label
-                                    </Checkbox>
-                                    <Checkbox >
-                                        Checkbox Label
-                                    </Checkbox>
-                                </AccordionPanel>
-                            </AccordionItem>
-
-                            {/************** BY Size **************/}
-
-                            <AccordionItem>
-                                <h2>
-                                    <AccordionButton>
-                                        <Box as="span" flex='1' textAlign='left'>
-                                            SIZE
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                </h2>
-                                <AccordionPanel pb={4}>
-                                    <Input></Input>
-                                    <Flex flexDirection='column'>
-                                        <Checkbox >XXS</Checkbox> <Checkbox >XS </Checkbox><Checkbox >  S</Checkbox><Checkbox > M</Checkbox><Checkbox >  L </Checkbox><Checkbox > XL</Checkbox><Checkbox >  XXL </Checkbox><Checkbox > XXL </Checkbox>
-                                    </Flex>
-                                </AccordionPanel>
-                            </AccordionItem>
-
-                            {/************** BY PRICES **************/}
-
-                            <AccordionItem >
-                                <h2>
-                                    <AccordionButton>
-                                        <Box as="span" flex='1' textAlign='left'>
-                                            PRICES
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                </h2>
-                                <AccordionPanel mb={'30px'} pb={4}>
-
-                                    <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} value={price} onChange={handleSliderChange}>
-                                        <SliderTrack>
-                                            <SliderFilledTrack />
-                                        </SliderTrack>
-                                        <SliderThumb bg='blue.500' />
-                                        <Box position='absolute' bottom='-24px' textAlign={'center'} >
-                                            <Text fontSize='sm'>{price}</Text>
-                                        </Box>
-                                    </Slider>
-                                </AccordionPanel>
-                            </AccordionItem>
-
-
-                            {/************** SORT **************/}
-
-                            <AccordionItem>
-                                <h2>
-                                    <AccordionButton>
-                                        <Box as="span" flex='1' textAlign='left'>
-                                            SORT
-                                        </Box>
-                                        <AccordionIcon />
-                                    </AccordionButton>
-                                </h2>
-                                <AccordionPanel pb={4}>
-                                    <Stack>
-
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Price - High to Low
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Price - Low to High
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Newest
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Popularity
-                                        </Radio>
-
-                                    </Stack>
-                                </AccordionPanel>
-                            </AccordionItem>
-
-                        </Accordion>
-
-                        <Box pl={'5'} mt={'5'}>
-                            <Button isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
-                                onClick={() =>
-                                    toast({
-                                        position: 'bottom-left',
-                                        isClosable: true,
-                                        render: () => (
-                                            <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
-                                                Applied
+                        <form onSubmit={handleFunctionality}>
+                            <Accordion allowMultiple>
+                                {/************** BY PRODUCTS **************/}
+                                <AccordionItem>
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box as="span" flex='1' textAlign='left'>
+                                                PRODUCTS
                                             </Box>
-                                        ),
-                                    })
-                                }
-                            >Apply</Button>
-                            <Button w='90px' colorScheme='teal' variant='outline'>Clear</Button>
-                        </Box>
+                                            <AccordionIcon />
+                                        </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                        <Input></Input>
+                                        {data?.map((ele) => {
+                                            return <Checkbox key={ele.id}
+                                                name='productsCheck'
+                                                value={state.productsCheck}
+                                                onChange={(e) => dispatch({
+                                                    type: 'productsCheck',
+                                                    payload: e.target.checked
+                                                })}
+                                            >{ele.category}</Checkbox>
+                                        })}
+
+                                    </AccordionPanel>
+                                </AccordionItem>
+
+                                {/************** BY THEMES **************/}
+
+                                <AccordionItem>
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box as="span" flex='1' textAlign='left'>
+                                                THEMES
+                                            </Box>
+                                            <AccordionIcon />
+                                        </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                        <Input></Input>
+                                        <Checkbox >
+                                            Checkbox Label
+                                        </Checkbox>
+                                        <Checkbox >
+                                            Checkbox Label
+                                        </Checkbox>
+                                    </AccordionPanel>
+                                </AccordionItem>
+
+                                {/************** BY Size **************/}
+
+                                <AccordionItem>
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box as="span" flex='1' textAlign='left'>
+                                                SIZE
+                                            </Box>
+                                            <AccordionIcon />
+                                        </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                        <Input></Input>
+                                        <Flex flexDirection='column'>
+                                            <Checkbox >XXS</Checkbox> <Checkbox >XS </Checkbox><Checkbox >  S</Checkbox><Checkbox > M</Checkbox><Checkbox >  L </Checkbox><Checkbox > XL</Checkbox><Checkbox >  XXL </Checkbox><Checkbox > XXL </Checkbox>
+                                        </Flex>
+                                    </AccordionPanel>
+                                </AccordionItem>
+
+                                {/************** BY PRICES **************/}
+
+                                <AccordionItem >
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box as="span" flex='1' textAlign='left'>
+                                                PRICES
+                                            </Box>
+                                            <AccordionIcon />
+                                        </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel mb={'30px'} pb={4}>
+
+                                        <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} value={state.price} onChange={handleSliderChange}>
+                                            <SliderTrack>
+                                                <SliderFilledTrack />
+                                            </SliderTrack>
+                                            <SliderThumb bg='blue.500' />
+                                            <Box position='absolute' bottom='-24px' textAlign={'center'} >
+                                                <Text fontSize='sm'>{price}</Text>
+                                            </Box>
+                                        </Slider>
+                                    </AccordionPanel>
+                                </AccordionItem>
+
+
+                                {/************** SORT **************/}
+
+                                <AccordionItem>
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box as="span" flex='1' textAlign='left'>
+                                                SORT
+                                            </Box>
+                                            <AccordionIcon />
+                                        </AccordionButton>
+                                    </h2>
+                                    <AccordionPanel pb={4}>
+                                        <Stack>
+                                            <RadioGroup onChange={(e) => handleSortOptionChange(e.target.checked)} value={sortOption}>
+                                                <Radio size='md' colorScheme='green'
+                                                    // name="sort-by-price"
+                                                    // value="HIGH_TO_LOW"
+                                                    // checked={state.SoryByPrice === 'HIGH_TO_LOW'}
+                                                    // onChange={handleSortByPriceChange}
+
+                                                    value="priceDesc"
+                                                >
+                                                    Price - High to Low
+                                                </Radio>
+                                                <Radio size='md' colorScheme='green'
+                                                    // name="sort-by-price"
+                                                    // value="LOW_TO_HIGH"
+                                                    // checked={state.SoryByPrice === 'LOW_TO_HIGH'}
+                                                    // onChange={handleSortByPriceChange}
+                                                    value="priceAsc"
+
+
+                                                >
+                                                    Price - Low to High
+                                                </Radio>
+                                                <Radio size='md' colorScheme='green'>
+                                                    Newest
+                                                </Radio>
+                                                <Radio size='md' colorScheme='green'>
+                                                    Popularity
+                                                </Radio>
+                                            </RadioGroup>
+                                        </Stack>
+
+                                    </AccordionPanel>
+                                </AccordionItem>
+
+                            </Accordion>
+
+                            <Box pl={'5'} mt={'5'}>
+                                <Button isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
+                                    onClick={() =>
+                                        toast({
+                                            position: 'bottom-left',
+                                            isClosable: true,
+                                            render: () => (
+                                                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                                                    Applied
+                                                </Box>
+                                            ),
+                                        })
+                                    }
+                                >Apply</Button>
+                                <Button w='90px' colorScheme='teal' variant='outline'>Clear</Button>
+                            </Box>
+                        </form>
+
+
+                        {/* Just to Check */}
+                        <Button onClick={() => sortProductsByPriceAscending()}>Sort by Price (Low to High)</Button>
 
                     </Box>
 

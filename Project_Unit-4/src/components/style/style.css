@@ -4,19 +4,25 @@
     border: 2px solid red;
     width: 1380px;
     height: 62px;
-    margin:auto;
+    margin: auto;
     color: white;
-  
+
 }
-.footerFont > p{
+
+.footerFont>p {
     color: #58606B;
     margin-top: 5px;
     font-weight: 700;
 }
-.tagColor{
+
+.tagColor {
     color: #E71318ed;
 }
 
 .box img {
     transition: all 10s ease;
-  }
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}

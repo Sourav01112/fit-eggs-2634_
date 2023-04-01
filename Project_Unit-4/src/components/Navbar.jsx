@@ -15,6 +15,7 @@ import logo from '../assets/The Amazing.png'
 import { Navigate } from "react-router-dom";
 import house from '../assets/house.svg'
 import { useAuth0 } from "@auth0/auth0-react";
+import './style/style.css'
 
 export const Navbar = () => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -73,8 +74,8 @@ export const Navbar = () => {
                     </Box>
                     <Spacer />
                     <HStack fontSize={'13px'} spacing='24px' mr='100px'>
-                        <Box>TRACK ORDER</Box>
-                        <Box>CONTACT US</Box>
+                        <Box style={{fontFamily: 'Poppins, sans-serif '}}>TRACK ORDER</Box>
+                        <Box style={{fontFamily: 'Poppins, sans-serif '}}>CONTACT US</Box>
                         <Box>DOWNLOAD APP</Box>
 
                         {isAuthenticated &&
