@@ -1,11 +1,10 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { WomenSection } from './WomenSection'
-// import { MenSection } from './MenSection'
 import { Homepage } from './Homepage'
-// import { Login } from './Login'
 import { WomenSingleProductPage } from './WomenSingleProductPage'
 import { PrivateRoute } from './AuthContext/PrivateRoute'
+import Cart from '../components/Cart/Cart'
 
 export const AllRoutes = () => {
     return (
@@ -19,15 +18,13 @@ export const AllRoutes = () => {
                     </PrivateRoute>
                 } />
 
-
-                {/* <Route path='/men' element={<MenSection />} /> */}
-                {/* <Route path='/men' element={<MenSection />} /> */}
-                {/* <Route path='/login' element={<Login />} /> */}
-
-                {/* <Route to='/kids' element={<KidsCard />} /> */}
-                {/* <Route path='*' element={<NoPageFound />} /> */}
-                <Route />
+                <Route path='/cart' element={<Cart />} />
+             
             </Routes>
         </div>
     )
 }
+
+
+
+{/* <Route path='*' element={<NoPageFound />} /> */}

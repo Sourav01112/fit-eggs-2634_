@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useReducer } from 'react'
 import { Footer } from './Footer'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
+
 
 import {
     Box, Image, Grid, Heading, Text, Divider, Flex, Button, Select, Accordion,
@@ -72,9 +73,9 @@ export const WomenSingleProductPage = () => {
 
                             <Image style={{ width: '385px' }} src={res?.image} />
 
-                            <Image style={{ width: '385px' }} src={res?.hover_image}/>
+                            <Image style={{ width: '385px' }} src={res?.hover_image} />
 
-                            <Image style={{ width: '385px' }}src={res?.image} />
+                            <Image style={{ width: '385px' }} src={res?.image} />
 
                             <Image style={{ width: '385px' }} src={res?.hover_image} />
 
@@ -90,7 +91,7 @@ export const WomenSingleProductPage = () => {
                         <Divider orientation='horizontal' />
                         <Flex>
                             <Text mt={'21px'} mr={'15px'}>₹ {res?.price}</Text>
-                            <Text mt={'21px'} mr={'15px'}  textDecoration="line-through" color='#CCCCCC'>₹ {res?.price-50}</Text>
+                            <Text mt={'21px'} mr={'15px'} textDecoration="line-through" color='#CCCCCC'>₹ {res?.price - 50}</Text>
                             <Text mt={'21px'} style={{ color: 'red' }}>50₹ Member Discount</Text>
                         </Flex>
                         <Text mt={'21px'}>Please select a size. <a href="#">SIZE CHART</a></Text>
@@ -118,7 +119,10 @@ export const WomenSingleProductPage = () => {
                             </Select>
                         </Flex>
                         <Flex mt={'21px'}>
-                            <Button>ADD TO CART</Button>
+                            <Link to='/cart'>
+                                <Button>ADD TO CART</Button>
+                            </Link>
+
                             <Button>ADD TO WISHLISHT</Button>
                         </Flex>
 

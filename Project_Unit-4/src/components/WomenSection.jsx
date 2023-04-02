@@ -409,7 +409,7 @@ export const WomenSection = () => {
                                     <AccordionPanel pb={4}>
                                         <Stack>
                                             <RadioGroup 
-                                            // value={order} onChange={(e) => handlePriceChange(e)}
+                                            value={order} onChange={(e) => handlePriceChange(e)}
                                             >
                                                 <Radio size='md' colorScheme='green' value="desc"
                                                 >
