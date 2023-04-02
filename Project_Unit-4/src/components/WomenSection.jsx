@@ -9,6 +9,7 @@ import { Pagination } from './Pagination'
 import { Link } from 'react-router-dom'
 import { Spinner } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react'
+import axios from 'axios';
 
 
 const reducer = (state, action) => {
@@ -56,14 +57,10 @@ export const WomenSection = () => {
     const [totalCount, setTotalCount] = useState(0)
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(8)
-    const [price, setPrice] = useState(422);
     const [state, dispatch] = useReducer(reducer, inState)
     const [product, setProduct] = useState([])
-
-
-    // const handleSliderChange = (value) => {
-    //     setPrice(value);
-    // };
+    const [price, setPrice] = useState(422);
+    const [order, setOrder] = useState('')
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -76,33 +73,43 @@ export const WomenSection = () => {
 
     const toast = useToast()
 
-    // DO with Axios
+    // ****************DO with Axios**********
 
-    const FetchAndRender = async (page) => {
+    const getData = (params = {}) => {
+        return axios.get(`https://extinct-dove-jumpsuit.cyclic.app/women`, {
+            params: {
+                _page: params.page,
+                _limit: params.limit,
+                _sort: params.sort,
+                _order: params.order
+            }
+        })
+    }
 
-        try {
-            dispatch({ type: "FETCH_LOADING" })
-            let res = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women?_limit=${limit}&_page=${page}`)
-            let out = await res.json()
-            setProduct(out)
-            // console.log(out)
-            let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
-
-            setTotalCount(count)
-            // console.log(count)
-            dispatch({ type: "FETCH_SUCCESS", payload: out })
-
-        } catch (error) {
-            dispatch({ type: "FETCH_ERROR" })
-        }
-
+    const FetchAndRender = (page, order) => {
+        dispatch({ type: "FETCH_LOADING" })
+        getData({
+            page: page,
+            limit: 8,
+            sort: 'price',
+            order: order
+        })
+            .then((res) => {
+                // console.log(res)
+                dispatch({ type: "FETCH_SUCCESS", payload: res?.data })
+                let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
+                setTotalCount(count)
+            })
+            .catch(() => {
+                dispatch({ type: "FETCH_ERROR" })
+            })
     }
 
     useEffect(() => {
-        FetchAndRender(page)
-    }, [page])
+        FetchAndRender(page, order)
+    }, [page, order])
 
-    const { loading, error, data } = state
+    const { loading, error, data = [] } = state
 
 
     //***************** Pagination **************/
@@ -139,73 +146,87 @@ export const WomenSection = () => {
 
 
 
-    const reducer1 = (state1, action1) => {
-        switch (action1.type) {
-            case "productsCheck": {
-                return {
-                    ...state1,
-                    productsCheck: action1.payload
-                }
-            }
-            case "UPDATE_PRICE":
-                return { ...state1, price: action1.payload };
-            case 'SORT_BY_PRICE':
-                const SoryByPrice = action1.payload;
-                let sortedProducts = [...state1.products];
-                if (SoryByPrice === 'LOW_TO_HIGH') {
-                    sortedProducts.sort((a, b) => a.price - b.price);
-                } else if (SoryByPrice === 'HIGH_TO_LOW') {
-                    sortedProducts.sort((a, b) => b.price - a.price);
-                }
-                return { ...state1, SoryByPrice: SoryByPrice, products: sortedProducts };
-            default: {
-                // throw new Error()
-                console.log(`Action type is 404`)
-                return state1
-            }
-        }
-    }
+    // const reducer1 = (state1, action1) => {
+    //     switch (action1.type) {
+    //         case "productsCheck": {
+    //             return {
+    //                 ...state1,
+    //                 productsCheck: action1.payload
+    //             }
+    //         }
+    //         case "UPDATE_PRICE":
+    //             return { ...state1, price: action1.payload };
+    //         case 'SORT_BY_PRICE':
+    //             const SoryByPrice = action1.payload;
+    //             let sortedProducts = [...state1.products];
+    //             if (SoryByPrice === 'LOW_TO_HIGH') {
+    //                 sortedProducts.sort((a, b) => a.price - b.price);
+    //             } else if (SoryByPrice === 'HIGH_TO_LOW') {
+    //                 sortedProducts.sort((a, b) => b.price - a.price);
+    //             }
+    //             return { ...state1, SoryByPrice: SoryByPrice, products: sortedProducts };
+    //         default: {
+    //             // throw new Error()
+    //             console.log(`Action type is 404`)
+    //             return state1
+    //         }
+    //     }
+    // }
 
-    const initialState = {
-        productsCheck: false,
-        price: 422,
-        SoryByPrice: null
-    }
+    // const initialState = {
+    //     productsCheck: false,
+    //     price: 422,
+    //     rating: ""
+    // }
 
-    const [state1, dispatch1] = useReducer(reducer1, initialState)
-    const [submitted, setSubmit] = useState([])
-    const [sortOption, setSortOption] = useState("priceAsc");
+    // const [state1, dispatch1] = useReducer(reducer1, initialState)
+    // const [submitted, setSubmit] = useState([])
+    // const [sortOption, setSortOption] = useState("priceAsc");
 
-    const handleSortByPriceChange = (event) => {
-        const SoryByPrice = event.target.value;
-        dispatch({ type: 'SORT_BY_PRICE', payload: SoryByPrice });
-    };
+    // const handleSortByPriceChange = (event) => {
+    //     const SoryByPrice = event.target.value;
+    //     dispatch({ type: 'SORT_BY_PRICE', payload: SoryByPrice });
+    // };
 
-    function handleSliderChange(value) {
-        dispatch({ type: "UPDATE_PRICE", payload: value });
-    }
-    const handleFunctionality = (e) => {
-        e.preventDefault()
-        setSubmit([...submitted, state1])
-        console.log(submitted)
-    }
+    // function handleSliderChange(value) {
+    //     dispatch({ type: "UPDATE_PRICE", payload: value });
+    // }
 
-    function sortProductsByPriceAscending() {
-        const sortedProducts = [...product].sort((a, b) => a.price - b.price);
-        setProduct(sortedProducts);
-    }
+    // const handleFunctionality = (e) => {
+    //     e.preventDefault()
+    //     setSubmit([...submitted, state1])
+    //     console.log(submitted)
+    // }
 
-    function sortProductsByPriceDescending() {
-        const sortedProducts = [...product].sort((a, b) => b.price - a.price);
-        setProduct(sortedProducts);
-    }
+    // const handlePriceChange = (e) => {
+    //     const value = e.target.value;
+    //     setPriceFilter(value)
+    //     if (value === "") {
+    //         setOrder(data);
+    //     } else {
+    //         const filtered = data.filter((item) => item.price === value)
+    //         setOrder(filtered);
+    //     }
+    // };
 
 
-    function handleSortOptionChange(value) {
-        // const value = event.target?.checked
-        setSortOption(value);
 
-    }
+    // function sortProductsByPriceAscending() {
+    //     const sortedProducts = [...product].sort((a, b) => a.price - b.price);
+    //     setProduct(sortedProducts);
+    // }
+
+    // function sortProductsByPriceDescending() {
+    //     const sortedProducts = [...product].sort((a, b) => b.price - a.price);
+    //     setProduct(sortedProducts);
+    // }
+
+
+    // function handleSortOptionChange(value) {
+    //     // const value = event.target?.checked
+    //     setSortOption(value);
+
+    // }
 
 
     // *****************SORT - FILTER ENDS*********************/*  */
@@ -276,7 +297,8 @@ export const WomenSection = () => {
 
 
                     >
-                        <form onSubmit={handleFunctionality}>
+                        {/* <form onSubmit={handleFunctionality}> */}
+                        <form >
                             <Accordion allowMultiple>
                                 {/************** BY PRODUCTS **************/}
                                 <AccordionItem>
@@ -358,7 +380,9 @@ export const WomenSection = () => {
                                     </h2>
                                     <AccordionPanel mb={'30px'} pb={4}>
 
-                                        <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} value={state.price} onChange={handleSliderChange}>
+                                        <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} 
+                                        // value={state.price} onChange={handleSliderChange}
+                                        >
                                             <SliderTrack>
                                                 <SliderFilledTrack />
                                             </SliderTrack>
@@ -384,44 +408,27 @@ export const WomenSection = () => {
                                     </h2>
                                     <AccordionPanel pb={4}>
                                         <Stack>
-                                            <RadioGroup onChange={(e) => handleSortOptionChange(e.target.checked)} value={sortOption}>
-                                                <Radio size='md' colorScheme='green'
-                                                    // name="sort-by-price"
-                                                    // value="HIGH_TO_LOW"
-                                                    // checked={state.SoryByPrice === 'HIGH_TO_LOW'}
-                                                    // onChange={handleSortByPriceChange}
-
-                                                    value="priceDesc"
+                                            <RadioGroup 
+                                            // value={order} onChange={(e) => handlePriceChange(e)}
+                                            >
+                                                <Radio size='md' colorScheme='green' value="desc"
                                                 >
                                                     Price - High to Low
                                                 </Radio>
-                                                <Radio size='md' colorScheme='green'
-                                                    // name="sort-by-price"
-                                                    // value="LOW_TO_HIGH"
-                                                    // checked={state.SoryByPrice === 'LOW_TO_HIGH'}
-                                                    // onChange={handleSortByPriceChange}
-                                                    value="priceAsc"
-
-
+                                                <Radio size='md' colorScheme='green' value="asc"
                                                 >
                                                     Price - Low to High
                                                 </Radio>
-                                                <Radio size='md' colorScheme='green'>
-                                                    Newest
-                                                </Radio>
-                                                <Radio size='md' colorScheme='green'>
-                                                    Popularity
-                                                </Radio>
                                             </RadioGroup>
                                         </Stack>
-
                                     </AccordionPanel>
+
                                 </AccordionItem>
 
                             </Accordion>
 
                             <Box pl={'5'} mt={'5'}>
-                                <Button isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
+                                <Button type='submit' isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
                                     onClick={() =>
                                         toast({
                                             position: 'bottom-left',
@@ -440,7 +447,7 @@ export const WomenSection = () => {
 
 
                         {/* Just to Check */}
-                        <Button onClick={() => sortProductsByPriceAscending()}>Sort by Price (Low to High)</Button>
+                        {/* <Button>Sort by Price (Low to High)</Button> */}
 
                     </Box>
 
@@ -448,7 +455,7 @@ export const WomenSection = () => {
                     <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', width: '1060px' }}>
                         {data?.map((ele) => {
                             return (
-                                <Link to={`/women/products/t-shirts/${ele.id}`}>
+                                <Link to={`/women/${ele.id}`}>
                                     <Box >
                                         <PageSkeleton key={ele.id} {...ele} />
                                     </Box>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export const PrivateRoute = (props) => {
 
     const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
-    const [showAlert, setShowAlert] = useState(false);
+    // const [showAlert, setShowAlert] = useState(false);
 
     if (!isAuthenticated) {
         loginWithRedirect();

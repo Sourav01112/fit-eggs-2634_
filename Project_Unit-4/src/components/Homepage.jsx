@@ -92,7 +92,7 @@ export const Homepage = () => {
             <div style={{ display: 'flex' }} >
                 <HomeCard src={`https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/product-images/WebsiteTiles_Big_Women-version6.jpg?format=webp&w=480&dpr=1.4`} />
 
-                <Link to='/women/t-shirts'>
+                <Link to='/women'>
                     <HomeCard src={`https://prod-img.thesouledstore.com/public/theSoul/storage/mobile-cms-media-prod/product-images/WebsiteTiles_Big_Women-version5.jpg?format=webp&w=480&dpr=1.4`} />
                 </Link>
 
