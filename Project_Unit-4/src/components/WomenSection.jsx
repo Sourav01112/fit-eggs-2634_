@@ -1,13 +1,15 @@
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect, useReducer, useRef } from 'react'
 import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton, RadioGroup, Select
 } from '@chakra-ui/react'
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { AddIcon } from '@chakra-ui/icons'
 import { PageSkeleton } from './PageSkeleton'
 import { Pagination } from './Pagination'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Spinner } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react'
+import axios from 'axios';
 
 
 const reducer = (state, action) => {
@@ -34,37 +36,57 @@ const reducer = (state, action) => {
             }
         }
         default: {
-            // throw new Error()
             console.log(`Action type is invalid`)
             return state
         }
     }
 }
+
+
 const inState = {
     loading: false,
     data: [],
     error: false
 }
 
+
+const getPageNumber = (PageNumber) => {
+    PageNumber = Number(PageNumber)
+    if (typeof PageNumber !== 'number') {
+        PageNumber = 1
+    }
+    if (!PageNumber) {
+        PageNumber = 1
+    }
+    if (PageNumber <= 0) {
+        PageNumber = 1
+    }
+    return PageNumber
+}
+
 //***************************MAIN********************
 
 export const WomenSection = () => {
 
+    let [searchParams, setSearchParams] = useSearchParams()
     const [totalCount, setTotalCount] = useState(0)
-    const [page, setPage] = useState(1)
+    const initialPage = getPageNumber(searchParams.get('page'))
+    const [page, setPage] = useState(initialPage || 1)
     const [limit, setLimit] = useState(8)
-    const [price, setPrice] = useState(422);
     const [state, dispatch] = useReducer(reducer, inState)
+    const [product, setProduct] = useState([])
+    const [price, setPrice] = useState(422);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+    const [searchResults, setSearchResults] = useState([]);
+    const [sortOrder, setSortOrder] = useState("");
 
-    const handleSliderChange = (value) => {
-        setPrice(value);
-    };
+    // const [order, setOrder] = useState('')
 
     const [isLoading, setIsLoading] = useState(false);
 
     const handleClickBtn = () => {
         setIsLoading(true);
-
         setTimeout(() => {
             setIsLoading(false);
         }, 1000); // 10 seconds in milliseconds
@@ -72,27 +94,44 @@ export const WomenSection = () => {
 
     const toast = useToast()
 
-    const FetchAndRender = async (page) => {
+    // ****************DO with Axios**********
 
-        try {
-            dispatch({ type: "FETCH_LOADING" })
-            let res = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women?_limit=${limit}&_page=${page}`)
-            let out = await res.json()
-            // console.log(out)
-            let count = Number(res.headers.get("X-Total-Count"))
-            setTotalCount(count)
-            // console.log(count)
-            dispatch({ type: "FETCH_SUCCESS", payload: out })
+    const getData = (params = {}) => {
+        return axios.get(`https://extinct-dove-jumpsuit.cyclic.app/women`, {
+            params: {
+                _page: params.page,
+                _limit: params.limit,
+                q: params.searchQuery
+            }
+        })
+    }
 
-        } catch (error) {
-            dispatch({ type: "FETCH_ERROR" })
-        }
-
+    const FetchAndRender = (page, searchQuery) => {
+        dispatch({ type: "FETCH_LOADING" })
+        getData({
+            page: page,
+            limit: 12,
+            q: searchQuery
+        })
+            .then((res) => {
+                // console.log(res)
+                dispatch({ type: "FETCH_SUCCESS", payload: res?.data })
+                let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
+                setTotalCount(count)
+            })
+            .catch(() => {
+                dispatch({ type: "FETCH_ERROR" })
+            })
     }
 
     useEffect(() => {
         FetchAndRender(page)
     }, [page])
+
+
+    useEffect(() => {
+        setSearchParams({ page: page, searchQuery: searchQuery })
+    }, [page, searchQuery])
 
     const { loading, error, data } = state
 
@@ -103,7 +142,116 @@ export const WomenSection = () => {
         setPage(page)
     }
 
-    //***************** Pagination **************/
+    //***************** Pagination ENDS**************/
+
+
+    //****************  Scroll to Top & Bottom  **************
+    const [isTop, setIsTop] = useState(true);
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+        setIsTop(true);
+    };
+
+    const scrollToBottom = () => {
+        window.scrollTo({
+            top: document.documentElement.scrollHeight,
+            behavior: "smooth"
+        });
+        setIsTop(false);
+    };
+    //****************  Scroll to Top & Bottom ENDS **************
+
+
+    // *********FILTER by category *********
+
+    useEffect(() => {
+        dispatch({ type: "FETCH_LOADING" })
+        const filteredData = selectedCategories.length === 0 ? data : data.filter((item) => {
+            return selectedCategories.some((category) => item.category === category);
+        });
+        dispatch({ type: "FETCH_SUCCESS", payload: filteredData });
+    }, [selectedCategories, dispatch, data]);
+
+
+    const handleCategoryCheckboxChange = (e) => {
+        const category = e.target.value;
+        const isChecked = e.target.checked;
+
+        setSelectedCategories((prevCategories) => {
+            if (isChecked) {
+                // Add the selected category to the list of selected categories
+                return [...prevCategories, category];
+            } else {
+                // Remove the unselected category from the list of selected categories
+                return prevCategories.filter((c) => c !== category);
+            }
+        });
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    };
+
+    // *****************FILTER -- Ends *********************
+
+
+    //********************* SORT ********************
+
+    const handleSort = (e) => {
+        let target = e.target.value
+        let sortedData
+        if (target == 'lth') {
+            sortedData = data.sort((a, b) => Number(a.price) - Number(b.price))
+        } else if (target == 'htl') {
+            sortedData = data.sort((a, b) => Number(b.price) - Number(a.price))
+        } else {
+            sortedData = data
+        }
+        dispatch({ type: "FETCH_SUCCESS", payload: sortedData })
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    }
+
+    // ***************** SORT ENDS *********************/*  */
+
+    //************************ SEARCH */
+
+    const handleSearchClick = () => {
+        const filteredData = data.filter((val) => {
+            if (searchQuery === '') {
+                return true;
+            } else {
+                return val.name.toLowerCase().includes(searchQuery.toLowerCase());
+            }
+        });
+        setSearchResults(filteredData);
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    };
+
 
     if (loading) {
         return (
@@ -171,8 +319,12 @@ export const WomenSection = () => {
 
 
                     >
+                        {/* <form onSubmit={handleFunctionality}> */}
+
                         <Accordion allowMultiple>
+
                             {/************** BY PRODUCTS **************/}
+
                             <AccordionItem>
                                 <h2>
                                     <AccordionButton>
@@ -183,35 +335,43 @@ export const WomenSection = () => {
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4}>
-                                    <Input></Input>
-                                    {data?.map((ele)=>{
-                                        return <Checkbox>{ele.category}</Checkbox>
+                                    <Input />
+                                    {data?.map((ele) => {
+                                        return (
+                                            <div key={ele.id}>
+                                                <Checkbox
+                                                    type="checkbox"
+                                                    // checked={selectedCategories.includes(ele.category)}
+                                                    onChange={handleCategoryCheckboxChange}
+                                                    value={ele.category}
+                                                >
+                                                    {ele.category}
+                                                </Checkbox>
+                                            </div>
+                                        );
                                     })}
-                                   
                                 </AccordionPanel>
                             </AccordionItem>
 
-                            {/************** BY THEMES **************/}
+                            {/************** BY SEARCH **************/}
 
                             <AccordionItem>
                                 <h2>
                                     <AccordionButton>
                                         <Box as="span" flex='1' textAlign='left'>
-                                            THEMES
+                                            SEARCH
                                         </Box>
                                         <AccordionIcon />
                                     </AccordionButton>
                                 </h2>
                                 <AccordionPanel pb={4}>
-                                    <Input></Input>
-                                    <Checkbox >
-                                        Checkbox Label
-                                    </Checkbox>
-                                    <Checkbox >
-                                        Checkbox Label
-                                    </Checkbox>
+                                    <Input value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder='Search Products' />
+
                                 </AccordionPanel>
                             </AccordionItem>
+
 
                             {/************** BY Size **************/}
 
@@ -245,7 +405,9 @@ export const WomenSection = () => {
                                 </h2>
                                 <AccordionPanel mb={'30px'} pb={4}>
 
-                                    <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} value={price} onChange={handleSliderChange}>
+                                    <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1}
+                                    // value={state.price} onChange={handleSliderChange}
+                                    >
                                         <SliderTrack>
                                             <SliderFilledTrack />
                                         </SliderTrack>
@@ -271,57 +433,69 @@ export const WomenSection = () => {
                                 </h2>
                                 <AccordionPanel pb={4}>
                                     <Stack>
-
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Price - High to Low
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Price - Low to High
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Newest
-                                        </Radio>
-                                        <Radio size='md' name='1' colorScheme='green'>
-                                            Popularity
-                                        </Radio>
+                                        {/* <RadioGroup onChange={handleSort} value={sortOrder}
+                                        >
+                                            <Radio size='md' colorScheme='green' value="htl"
+                                            >
+                                                Price - High to Low
+                                            </Radio>
+                                            <Radio size='md' colorScheme='green' value="lth"
+                                            >
+                                                Price - Low to High
+                                            </Radio>
+                                        </RadioGroup> */}
+                                        <Select onChange={handleSort} variant='unstyled'>
+                                            <option value=''>Sort By Price</option>
+                                            <option value='htl'>High to Low</option>
+                                            <option value='lth'>Low to High</option>
+                                        </Select>
+                                        value=''
 
                                     </Stack>
                                 </AccordionPanel>
+
                             </AccordionItem>
 
                         </Accordion>
 
                         <Box pl={'5'} mt={'5'}>
-                            <Button isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
-                                onClick={() =>
-                                    toast({
-                                        position: 'bottom-left',
-                                        isClosable: true,
-                                        render: () => (
-                                            <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
-                                                Applied
-                                            </Box>
-                                        ),
-                                    })
-                                }
+                            <Button type='submit' isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
+                                onClick={handleSearchClick}
+
                             >Apply</Button>
-                            <Button w='90px' colorScheme='teal' variant='outline'>Clear</Button>
+                            <Button w='90px' colorScheme='teal' variant='outline'
+                            // onClick={handleClearButtonClick}
+                            >Clear</Button>
                         </Box>
+
+
+
+                        {/* Just to Check */}
+                        {/* <Button>Sort by Price (Low to High)</Button> */}
 
                     </Box>
 
                     {/* RIGHT panel */}
                     <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', width: '1060px' }}>
-                        {data?.map((ele) => {
-                            return (
-                                <Link to={`/women/products/t-shirts/${ele.id}`}>
-                                    <Box >
+                
+                        {searchResults.length > 0 ? (
+                            searchResults?.map((ele) => (
+                                <Link to={`/women/${ele.id}`}>
+                                    <Box>
                                         <PageSkeleton key={ele.id} {...ele} />
                                     </Box>
                                 </Link>
+                            ))
+                        ) : (
+                            data?.map((ele) => (
+                                <Link to={`/women/${ele.id}`}>
+                                    <Box>
+                                        <PageSkeleton key={ele.id} {...ele} />
+                                    </Box>
+                                </Link>
+                            ))
+                        )}
 
-                            )
-                        })}
                     </Box>
 
                 </Box >
@@ -334,6 +508,17 @@ export const WomenSection = () => {
                     <Pagination page={page} totalCount={totalCount} onChange={handlePageChange} limit={limit} />
 
                 </Box>
+
+
+                <Box position="fixed" bottom="2rem" right="2rem">
+                    {isTop ? (
+                        <FaArrowCircleDown size={30} onClick={scrollToBottom} />
+                    ) : (
+                        <FaArrowCircleUp size={30} onClick={scrollToTop} />
+                    )}
+                </Box>
+
+
             </Box >
         )
     }

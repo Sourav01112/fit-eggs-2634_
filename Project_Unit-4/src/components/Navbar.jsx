@@ -1,21 +1,14 @@
 import { useState, useEffect } from "react";
 import {
-    Flex, Spacer, Tab, TabList, Tabs, Box, Select, HStack, FormControl, FormLabel, Spinner, Heading, Text, IconButton, Button, CloseButton, useDisclosure, List, ListItem, Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverBody,
-    PopoverFooter,
-    PopoverArrow,
-    PopoverCloseButton,
-    PopoverAnchor, Portal
+    Flex, Spacer, Tab, TabList, Tabs, Box, Select, HStack, FormControl, FormLabel, Spinner, Heading, Text, IconButton, Button, CloseButton, useDisclosure, List, ListItem, Popover, PopoverTrigger, PopoverContent, PopoverHeader, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, PopoverBody, PopoverFooter, PopoverArrow, PopoverCloseButton, PopoverAnchor, Portal,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { Search2Icon } from "@chakra-ui/icons";
 import logo from '../assets/The Amazing.png'
 import { Navigate } from "react-router-dom";
 import house from '../assets/house.svg'
 import { useAuth0 } from "@auth0/auth0-react";
+import './style/style.css'
+
 
 export const Navbar = () => {
     const [tabIndex, setTabIndex] = useState(0);
@@ -32,11 +25,10 @@ export const Navbar = () => {
         setShowBox(false);
     };
 
-
     return (
 
-        <Box>
-            <Box>
+        <Box >
+            <Box >
                 {showBox && (
                     <Flex alignItems="center" backgroundColor="black">
                         <Box flex={1}>
@@ -75,8 +67,8 @@ export const Navbar = () => {
                     </Box>
                     <Spacer />
                     <HStack fontSize={'13px'} spacing='24px' mr='100px'>
-                        <Box>TRACK ORDER</Box>
-                        <Box>CONTACT US</Box>
+                        <Box style={{ fontFamily: 'Poppins, sans-serif ' }}>TRACK ORDER</Box>
+                        <Box style={{ fontFamily: 'Poppins, sans-serif ' }}>CONTACT US</Box>
                         <Box>DOWNLOAD APP</Box>
 
                         {isAuthenticated &&
@@ -90,11 +82,9 @@ export const Navbar = () => {
                 </Flex>
             </Box>
 
-            <Box>
-
-
-                <Flex bg='white' color="black" p="2" marginLeft={'90px'} style={{ justifyContent: 'space-evenly', }}  >
-
+            {/* OPTIONS */}
+            <Box >
+                <Flex bg='white' color="black" p="2" marginLeft={'90px'} style={{ display: 'flex', justifyContent: 'space-evenly', flexDirection: 'row' }}  >
 
                     <Select iconSize="1em" border={"none"} placeholder='TOPWEAR' sx={{
                         fontFamily: 'sans-serif', fontSize: "14px", fontWeight: '700', color: 'rgba(88, 89, 91, 1)'
@@ -137,9 +127,9 @@ export const Navbar = () => {
                         //  border: '2px solid red', 
                         width: '1000px', paddingLeft: '100px', paddingRight: '100px'
                     }}>
-                        {/* <h1><i className="fa-solid fa-user"
-                            style={{ color: 'rgba(88, 89, 91, 1)' }}></i></h1> */}
-                        <Popover maxW='xs' >
+
+
+                        <Popover  >
                             <PopoverTrigger>
                                 <h1><i className="fa-solid fa-user"
                                     style={{ color: 'rgba(88, 89, 91, 1)' }}></i></h1>
@@ -147,7 +137,7 @@ export const Navbar = () => {
                             <Portal >
                                 <PopoverContent width='180px'>
                                     <PopoverArrow />
-                                    <PopoverHeader>Hello, {user?.name}</PopoverHeader>
+                                    <PopoverHeader>Hello {user?.name}</PopoverHeader>
                                     <PopoverCloseButton />
                                     <PopoverBody>
                                         <Button backgroundColor='#8BC34A' width='70px' height='35px' color='white'
@@ -163,12 +153,13 @@ export const Navbar = () => {
                             </Portal>
                         </Popover>
 
+
                         <h1><i className="fa-sharp fa-solid fa-bag-shopping" style={{ color: 'rgba(88, 89, 91, 1)' }}></i>  </h1>
                     </Box>
 
-                </Flex>
+                </Flex >
 
-            </Box>
+            </Box >
 
             {/* rgb(167,169,180) */}
 
@@ -179,3 +170,20 @@ export const Navbar = () => {
 // export default Navbar;
 
 
+
+
+
+{/* <Popover isLazy>
+                            <PopoverTrigger>
+                                <Button>Click me</Button>
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <PopoverHeader fontWeight='semibold'>Popover placement</PopoverHeader>
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                <PopoverBody>
+                                    <h1><i className="fa-solid fa-user"
+                                        style={{ color: 'rgba(88, 89, 91, 1)' }}></i></h1>
+                                </PopoverBody>
+                            </PopoverContent>
+                        </Popover> */}
