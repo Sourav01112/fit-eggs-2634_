@@ -181,9 +181,9 @@ export const Homepage = () => {
             <Footer />
             <Box position="fixed" bottom="2rem" right="2rem">
                 {isTop ? (
-                    <FaArrowCircleDown size={30} onClick={scrollToBottom} />
+                    <FaArrowCircleDown color='#FF5722' size={30} onClick={scrollToBottom} />
                 ) : (
-                    <FaArrowCircleUp size={30} onClick={scrollToTop} />
+                    <FaArrowCircleUp color='#FF5722' size={30} onClick={scrollToTop} />
                 )}
             </Box>
 

@@ -14,25 +14,9 @@ import axios from 'axios';
 
 const reducer = (state, action) => {
     switch (action.type) {
-        case "FETCH_LOADING": {
-            return {
-                loading: true,
-                data: [],
-                error: false
-            }
-        }
         case 'FETCH_SUCCESS': {
             return {
-                loading: false,
                 data: action.payload,
-                error: false
-            }
-        }
-        case 'FETCH_ERROR': {
-            return {
-                loading: false,
-                data: [],
-                error: true
             }
         }
         default: {
@@ -44,9 +28,7 @@ const reducer = (state, action) => {
 
 
 const inState = {
-    loading: false,
     data: [],
-    error: false
 }
 
 
@@ -68,6 +50,9 @@ const getPageNumber = (PageNumber) => {
 
 export const WomenSection = () => {
 
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(false)
+
     let [searchParams, setSearchParams] = useSearchParams()
     const [totalCount, setTotalCount] = useState(0)
     const initialPage = getPageNumber(searchParams.get('page'))
@@ -83,12 +68,12 @@ export const WomenSection = () => {
 
     // const [order, setOrder] = useState('')
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoad, setisLoad] = useState(false);
 
     const handleClickBtn = () => {
-        setIsLoading(true);
+        setisLoad(true);
         setTimeout(() => {
-            setIsLoading(false);
+            setisLoad(false);
         }, 1000); // 10 seconds in milliseconds
     };
 
@@ -107,20 +92,21 @@ export const WomenSection = () => {
     }
 
     const FetchAndRender = (page, searchQuery) => {
-        dispatch({ type: "FETCH_LOADING" })
+        setLoading(true)
         getData({
             page: page,
             limit: 12,
             q: searchQuery
         })
             .then((res) => {
-                // console.log(res)
                 dispatch({ type: "FETCH_SUCCESS", payload: res?.data })
                 let count = res.headers.get("X-Total-Count") ? Number(res.headers.get("X-Total-Count")) : 0
                 setTotalCount(count)
+                setLoading(false)
             })
             .catch(() => {
-                dispatch({ type: "FETCH_ERROR" })
+                setError(true)
+                setLoading(false)
             })
     }
 
@@ -128,13 +114,11 @@ export const WomenSection = () => {
         FetchAndRender(page)
     }, [page])
 
-
     useEffect(() => {
         setSearchParams({ page: page, searchQuery: searchQuery })
     }, [page, searchQuery])
 
-    const { loading, error, data } = state
-
+    const { data } = state   //***********************Destructuring HERE***************************
 
     //***************** Pagination **************/
 
@@ -169,7 +153,7 @@ export const WomenSection = () => {
     // *********FILTER by category *********
 
     useEffect(() => {
-        dispatch({ type: "FETCH_LOADING" })
+        // dispatch({ type: "FETCH_LOADING" })
         const filteredData = selectedCategories.length === 0 ? data : data.filter((item) => {
             return selectedCategories.some((category) => item.category === category);
         });
@@ -459,7 +443,7 @@ export const WomenSection = () => {
                         </Accordion>
 
                         <Box pl={'5'} mt={'5'}>
-                            <Button type='submit' isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
+                            <Button type='submit' isLoad={isLoad} w='90px' mr='15px' colorScheme='teal' variant='outline'
                                 onClick={handleSearchClick}
 
                             >Apply</Button>
@@ -477,7 +461,7 @@ export const WomenSection = () => {
 
                     {/* RIGHT panel */}
                     <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', width: '1060px' }}>
-                
+
                         {searchResults.length > 0 ? (
                             searchResults?.map((ele) => (
                                 <Link to={`/women/${ele.id}`}>
@@ -512,9 +496,9 @@ export const WomenSection = () => {
 
                 <Box position="fixed" bottom="2rem" right="2rem">
                     {isTop ? (
-                        <FaArrowCircleDown size={30} onClick={scrollToBottom} />
+                        <FaArrowCircleDown color='#FF5722' size={30} onClick={scrollToBottom} />
                     ) : (
-                        <FaArrowCircleUp size={30} onClick={scrollToTop} />
+                        <FaArrowCircleUp color='#FF5722' size={30} onClick={scrollToTop} />
                     )}
                 </Box>
 
