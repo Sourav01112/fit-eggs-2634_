@@ -145,9 +145,9 @@ export const WomenSingleProductPage = () => {
                             </Select>
                         </Flex>
                         <Flex gap='25px' mt={'21px'}>
-                            <Link to='/cart'>
+                            {/* <Link to='/cart'> */}
                                 <Button w='229px' h='38px' bg='#E11B23' borderRadius={'none'} color='white' >ADD TO CART</Button>
-                            </Link>
+                            {/* </Link> */}
 
                             <Button fontSize='sm' w='160px' h='38px' bg='white' borderRadius={'none'} colorScheme='teal' variant='outline' >ADD TO WISHLISHT</Button>
                         </Flex>
