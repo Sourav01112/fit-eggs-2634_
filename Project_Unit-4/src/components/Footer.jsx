@@ -66,7 +66,7 @@ export const Footer = () => {
 
 
                     <Box w={'1140px'} border={'1px solid #6666'} >
-                        <Accordion allowMultiple>
+                        <Accordion defaultIndex={[1]} allowMultiple>
                             <AccordionItem>
                                 {({ isExpanded }) => (
                                     <>

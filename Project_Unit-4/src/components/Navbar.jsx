@@ -172,18 +172,3 @@ export const Navbar = () => {
 
 
 
-
-{/* <Popover isLazy>
-                            <PopoverTrigger>
-                                <Button>Click me</Button>
-                            </PopoverTrigger>
-                            <PopoverContent>
-                                <PopoverHeader fontWeight='semibold'>Popover placement</PopoverHeader>
-                                <PopoverArrow />
-                                <PopoverCloseButton />
-                                <PopoverBody>
-                                    <h1><i className="fa-solid fa-user"
-                                        style={{ color: 'rgba(88, 89, 91, 1)' }}></i></h1>
-                                </PopoverBody>
-                            </PopoverContent>
-                        </Popover> */}
