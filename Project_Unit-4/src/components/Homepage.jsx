@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './style/style.css'
-import ImageCarousel from './ImageCarousel'
+import {ImageCarousel} from './ImageCarousel'
 import { HomeCard } from './HomeCard'
 import { Link } from 'react-router-dom'
 import { ChevronLeftIcon, ChevronRightIcon, AddIcon, MinusIcon } from "@chakra-ui/icons";

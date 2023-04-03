@@ -1,11 +1,11 @@
 /* @import url("https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200&display=swap"); */
 
-* {
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* font-family: Mulish; */
-}
+  font-family: Mulish;
+} */
 
 /* html {
   font-size: 55.5%;
@@ -17,10 +17,10 @@
   --icon-color: #525252;
 }
 
-i {
+/* i {
   width: 2rem;
   height: 2rem;
-}
+} */
 
 .fa,
 .fas {
@@ -79,17 +79,17 @@ header {
 }
 
 .cart-icon img {
-  width: 5rem;
-  height: 5rem;
+  width: 3rem;
+  height: 3rem;
   color: #2f80ed;
 }
 
 .cart-icon p {
   position: absolute;
-  width: 4rem;
-  height: 4rem;
+  width: 2rem;
+  height: 2rem;
   right: -1.2rem;
-  top: 0.9rem;
+  top: 2rem;
   border-radius: 50%;
   background: #99cbf7;
   color: #fff;
@@ -118,7 +118,7 @@ header {
   text-transform: capitalize;
   color: var(--main-color);
   margin-bottom: 5rem;
-  /* font-size: 55.5%; */
+
 }
 
 .total-items-count {
@@ -153,7 +153,7 @@ header {
 .cart-items-container {
   width: 90%;
   height: 56rem;
-  font-size: 55.5%;
+  /* font-size: 55.5%; */
 }
 
 .items-info {
@@ -323,13 +323,13 @@ header {
 
 /* responsive media queries  */
 
-@media (max-width: 968px) {
+/* @media (max-width: 968px) {
   html {
     font-size: 50%;
   }
-}
+} */
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .continue-shopping h3 {
     margin-left: 0;
   }
@@ -380,4 +380,4 @@ header {
   .card-total button {
     margin-bottom: 3rem;
   }
-}
+} */

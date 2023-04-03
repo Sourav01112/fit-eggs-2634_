@@ -5,6 +5,8 @@ import { Homepage } from './Homepage'
 import { WomenSingleProductPage } from './WomenSingleProductPage'
 import { PrivateRoute } from './AuthContext/PrivateRoute'
 import Cart from '../components/Cart/Cart'
+import { NoPageFound } from './NoPageFound'
+
 
 export const AllRoutes = () => {
     return (
@@ -19,12 +21,11 @@ export const AllRoutes = () => {
                 } />
 
                 <Route path='/cart' element={<Cart />} />
-             
+                <Route path='*' element={<NoPageFound />} />
+
             </Routes>
         </div>
     )
 }
 
 
-
-{/* <Route path='*' element={<NoPageFound />} /> */}

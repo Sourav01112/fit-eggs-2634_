@@ -1,12 +1,12 @@
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect, useReducer, useRef } from 'react'
 import {
-    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton, RadioGroup
+    Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Button, Accordion, AccordionItem, AccordionButton, AccordionPanel, AccordionIcon, Radio, Stack, Flex, Text, Image, Slider, SliderTrack, SliderFilledTrack, SliderThumb, Box, Input, Checkbox, Skeleton, SkeletonCircle, SkeletonText, IconButton, RadioGroup, Select
 } from '@chakra-ui/react'
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { AddIcon } from '@chakra-ui/icons'
 import { PageSkeleton } from './PageSkeleton'
 import { Pagination } from './Pagination'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Spinner } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react'
 import axios from 'axios';
@@ -36,7 +36,6 @@ const reducer = (state, action) => {
             }
         }
         default: {
-            // throw new Error()
             console.log(`Action type is invalid`)
             return state
         }
@@ -50,17 +49,39 @@ const inState = {
     error: false
 }
 
+
+const getPageNumber = (PageNumber) => {
+    PageNumber = Number(PageNumber)
+    if (typeof PageNumber !== 'number') {
+        PageNumber = 1
+    }
+    if (!PageNumber) {
+        PageNumber = 1
+    }
+    if (PageNumber <= 0) {
+        PageNumber = 1
+    }
+    return PageNumber
+}
+
 //***************************MAIN********************
 
 export const WomenSection = () => {
 
+    let [searchParams, setSearchParams] = useSearchParams()
     const [totalCount, setTotalCount] = useState(0)
-    const [page, setPage] = useState(1)
+    const initialPage = getPageNumber(searchParams.get('page'))
+    const [page, setPage] = useState(initialPage || 1)
     const [limit, setLimit] = useState(8)
     const [state, dispatch] = useReducer(reducer, inState)
     const [product, setProduct] = useState([])
     const [price, setPrice] = useState(422);
-    const [order, setOrder] = useState('')
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '')
+    const [searchResults, setSearchResults] = useState([]);
+    const [sortOrder, setSortOrder] = useState("");
+
+    // const [order, setOrder] = useState('')
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -80,19 +101,17 @@ export const WomenSection = () => {
             params: {
                 _page: params.page,
                 _limit: params.limit,
-                _sort: params.sort,
-                _order: params.order
+                q: params.searchQuery
             }
         })
     }
 
-    const FetchAndRender = (page, order) => {
+    const FetchAndRender = (page, searchQuery) => {
         dispatch({ type: "FETCH_LOADING" })
         getData({
             page: page,
-            limit: 8,
-            sort: 'price',
-            order: order
+            limit: 12,
+            q: searchQuery
         })
             .then((res) => {
                 // console.log(res)
@@ -106,10 +125,15 @@ export const WomenSection = () => {
     }
 
     useEffect(() => {
-        FetchAndRender(page, order)
-    }, [page, order])
+        FetchAndRender(page)
+    }, [page])
 
-    const { loading, error, data = [] } = state
+
+    useEffect(() => {
+        setSearchParams({ page: page, searchQuery: searchQuery })
+    }, [page, searchQuery])
+
+    const { loading, error, data } = state
 
 
     //***************** Pagination **************/
@@ -141,95 +165,93 @@ export const WomenSection = () => {
     };
     //****************  Scroll to Top & Bottom ENDS **************
 
-    // *****************SORT - FILTER *********************
+
+    // *********FILTER by category *********
+
+    useEffect(() => {
+        dispatch({ type: "FETCH_LOADING" })
+        const filteredData = selectedCategories.length === 0 ? data : data.filter((item) => {
+            return selectedCategories.some((category) => item.category === category);
+        });
+        dispatch({ type: "FETCH_SUCCESS", payload: filteredData });
+    }, [selectedCategories, dispatch, data]);
 
 
+    const handleCategoryCheckboxChange = (e) => {
+        const category = e.target.value;
+        const isChecked = e.target.checked;
+
+        setSelectedCategories((prevCategories) => {
+            if (isChecked) {
+                // Add the selected category to the list of selected categories
+                return [...prevCategories, category];
+            } else {
+                // Remove the unselected category from the list of selected categories
+                return prevCategories.filter((c) => c !== category);
+            }
+        });
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    };
+
+    // *****************FILTER -- Ends *********************
 
 
-    // const reducer1 = (state1, action1) => {
-    //     switch (action1.type) {
-    //         case "productsCheck": {
-    //             return {
-    //                 ...state1,
-    //                 productsCheck: action1.payload
-    //             }
-    //         }
-    //         case "UPDATE_PRICE":
-    //             return { ...state1, price: action1.payload };
-    //         case 'SORT_BY_PRICE':
-    //             const SoryByPrice = action1.payload;
-    //             let sortedProducts = [...state1.products];
-    //             if (SoryByPrice === 'LOW_TO_HIGH') {
-    //                 sortedProducts.sort((a, b) => a.price - b.price);
-    //             } else if (SoryByPrice === 'HIGH_TO_LOW') {
-    //                 sortedProducts.sort((a, b) => b.price - a.price);
-    //             }
-    //             return { ...state1, SoryByPrice: SoryByPrice, products: sortedProducts };
-    //         default: {
-    //             // throw new Error()
-    //             console.log(`Action type is 404`)
-    //             return state1
-    //         }
-    //     }
-    // }
+    //********************* SORT ********************
 
-    // const initialState = {
-    //     productsCheck: false,
-    //     price: 422,
-    //     rating: ""
-    // }
+    const handleSort = (e) => {
+        let target = e.target.value
+        let sortedData
+        if (target == 'lth') {
+            sortedData = data.sort((a, b) => Number(a.price) - Number(b.price))
+        } else if (target == 'htl') {
+            sortedData = data.sort((a, b) => Number(b.price) - Number(a.price))
+        } else {
+            sortedData = data
+        }
+        dispatch({ type: "FETCH_SUCCESS", payload: sortedData })
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    }
 
-    // const [state1, dispatch1] = useReducer(reducer1, initialState)
-    // const [submitted, setSubmit] = useState([])
-    // const [sortOption, setSortOption] = useState("priceAsc");
+    // ***************** SORT ENDS *********************/*  */
 
-    // const handleSortByPriceChange = (event) => {
-    //     const SoryByPrice = event.target.value;
-    //     dispatch({ type: 'SORT_BY_PRICE', payload: SoryByPrice });
-    // };
+    //************************ SEARCH */
 
-    // function handleSliderChange(value) {
-    //     dispatch({ type: "UPDATE_PRICE", payload: value });
-    // }
+    const handleSearchClick = () => {
+        const filteredData = data.filter((val) => {
+            if (searchQuery === '') {
+                return true;
+            } else {
+                return val.name.toLowerCase().includes(searchQuery.toLowerCase());
+            }
+        });
+        setSearchResults(filteredData);
+        toast({
+            position: 'bottom-left',
+            isClosable: true,
+            render: () => (
+                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
+                    Applied
+                </Box>
+            ),
+        })
+    };
 
-    // const handleFunctionality = (e) => {
-    //     e.preventDefault()
-    //     setSubmit([...submitted, state1])
-    //     console.log(submitted)
-    // }
-
-    // const handlePriceChange = (e) => {
-    //     const value = e.target.value;
-    //     setPriceFilter(value)
-    //     if (value === "") {
-    //         setOrder(data);
-    //     } else {
-    //         const filtered = data.filter((item) => item.price === value)
-    //         setOrder(filtered);
-    //     }
-    // };
-
-
-
-    // function sortProductsByPriceAscending() {
-    //     const sortedProducts = [...product].sort((a, b) => a.price - b.price);
-    //     setProduct(sortedProducts);
-    // }
-
-    // function sortProductsByPriceDescending() {
-    //     const sortedProducts = [...product].sort((a, b) => b.price - a.price);
-    //     setProduct(sortedProducts);
-    // }
-
-
-    // function handleSortOptionChange(value) {
-    //     // const value = event.target?.checked
-    //     setSortOption(value);
-
-    // }
-
-
-    // *****************SORT - FILTER ENDS*********************/*  */
 
     if (loading) {
         return (
@@ -298,152 +320,154 @@ export const WomenSection = () => {
 
                     >
                         {/* <form onSubmit={handleFunctionality}> */}
-                        <form >
-                            <Accordion allowMultiple>
-                                {/************** BY PRODUCTS **************/}
-                                <AccordionItem>
-                                    <h2>
-                                        <AccordionButton>
-                                            <Box as="span" flex='1' textAlign='left'>
-                                                PRODUCTS
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        <Input></Input>
-                                        {data?.map((ele) => {
-                                            return <Checkbox key={ele.id}
-                                                name='productsCheck'
-                                                value={state.productsCheck}
-                                                onChange={(e) => dispatch({
-                                                    type: 'productsCheck',
-                                                    payload: e.target.checked
-                                                })}
-                                            >{ele.category}</Checkbox>
-                                        })}
 
-                                    </AccordionPanel>
-                                </AccordionItem>
+                        <Accordion allowMultiple>
 
-                                {/************** BY THEMES **************/}
+                            {/************** BY PRODUCTS **************/}
 
-                                <AccordionItem>
-                                    <h2>
-                                        <AccordionButton>
-                                            <Box as="span" flex='1' textAlign='left'>
-                                                THEMES
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        <Input></Input>
-                                        <Checkbox >
-                                            Checkbox Label
-                                        </Checkbox>
-                                        <Checkbox >
-                                            Checkbox Label
-                                        </Checkbox>
-                                    </AccordionPanel>
-                                </AccordionItem>
+                            <AccordionItem>
+                                <h2>
+                                    <AccordionButton>
+                                        <Box as="span" flex='1' textAlign='left'>
+                                            PRODUCTS
+                                        </Box>
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel pb={4}>
+                                    <Input />
+                                    {data?.map((ele) => {
+                                        return (
+                                            <div key={ele.id}>
+                                                <Checkbox
+                                                    type="checkbox"
+                                                    // checked={selectedCategories.includes(ele.category)}
+                                                    onChange={handleCategoryCheckboxChange}
+                                                    value={ele.category}
+                                                >
+                                                    {ele.category}
+                                                </Checkbox>
+                                            </div>
+                                        );
+                                    })}
+                                </AccordionPanel>
+                            </AccordionItem>
 
-                                {/************** BY Size **************/}
+                            {/************** BY SEARCH **************/}
 
-                                <AccordionItem>
-                                    <h2>
-                                        <AccordionButton>
-                                            <Box as="span" flex='1' textAlign='left'>
-                                                SIZE
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        <Input></Input>
-                                        <Flex flexDirection='column'>
-                                            <Checkbox >XXS</Checkbox> <Checkbox >XS </Checkbox><Checkbox >  S</Checkbox><Checkbox > M</Checkbox><Checkbox >  L </Checkbox><Checkbox > XL</Checkbox><Checkbox >  XXL </Checkbox><Checkbox > XXL </Checkbox>
-                                        </Flex>
-                                    </AccordionPanel>
-                                </AccordionItem>
+                            <AccordionItem>
+                                <h2>
+                                    <AccordionButton>
+                                        <Box as="span" flex='1' textAlign='left'>
+                                            SEARCH
+                                        </Box>
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel pb={4}>
+                                    <Input value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder='Search Products' />
 
-                                {/************** BY PRICES **************/}
+                                </AccordionPanel>
+                            </AccordionItem>
 
-                                <AccordionItem >
-                                    <h2>
-                                        <AccordionButton>
-                                            <Box as="span" flex='1' textAlign='left'>
-                                                PRICES
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel mb={'30px'} pb={4}>
 
-                                        <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1} 
-                                        // value={state.price} onChange={handleSliderChange}
+                            {/************** BY Size **************/}
+
+                            <AccordionItem>
+                                <h2>
+                                    <AccordionButton>
+                                        <Box as="span" flex='1' textAlign='left'>
+                                            SIZE
+                                        </Box>
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel pb={4}>
+                                    <Input></Input>
+                                    <Flex flexDirection='column'>
+                                        <Checkbox >XXS</Checkbox> <Checkbox >XS </Checkbox><Checkbox >  S</Checkbox><Checkbox > M</Checkbox><Checkbox >  L </Checkbox><Checkbox > XL</Checkbox><Checkbox >  XXL </Checkbox><Checkbox > XXL </Checkbox>
+                                    </Flex>
+                                </AccordionPanel>
+                            </AccordionItem>
+
+                            {/************** BY PRICES **************/}
+
+                            <AccordionItem >
+                                <h2>
+                                    <AccordionButton>
+                                        <Box as="span" flex='1' textAlign='left'>
+                                            PRICES
+                                        </Box>
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel mb={'30px'} pb={4}>
+
+                                    <Slider colorScheme="blue" defaultValue={422} min={422} max={1049} step={1}
+                                    // value={state.price} onChange={handleSliderChange}
+                                    >
+                                        <SliderTrack>
+                                            <SliderFilledTrack />
+                                        </SliderTrack>
+                                        <SliderThumb bg='blue.500' />
+                                        <Box position='absolute' bottom='-24px' textAlign={'center'} >
+                                            <Text fontSize='sm'>{price}</Text>
+                                        </Box>
+                                    </Slider>
+                                </AccordionPanel>
+                            </AccordionItem>
+
+
+                            {/************** SORT **************/}
+
+                            <AccordionItem>
+                                <h2>
+                                    <AccordionButton>
+                                        <Box as="span" flex='1' textAlign='left'>
+                                            SORT
+                                        </Box>
+                                        <AccordionIcon />
+                                    </AccordionButton>
+                                </h2>
+                                <AccordionPanel pb={4}>
+                                    <Stack>
+                                        {/* <RadioGroup onChange={handleSort} value={sortOrder}
                                         >
-                                            <SliderTrack>
-                                                <SliderFilledTrack />
-                                            </SliderTrack>
-                                            <SliderThumb bg='blue.500' />
-                                            <Box position='absolute' bottom='-24px' textAlign={'center'} >
-                                                <Text fontSize='sm'>{price}</Text>
-                                            </Box>
-                                        </Slider>
-                                    </AccordionPanel>
-                                </AccordionItem>
-
-
-                                {/************** SORT **************/}
-
-                                <AccordionItem>
-                                    <h2>
-                                        <AccordionButton>
-                                            <Box as="span" flex='1' textAlign='left'>
-                                                SORT
-                                            </Box>
-                                            <AccordionIcon />
-                                        </AccordionButton>
-                                    </h2>
-                                    <AccordionPanel pb={4}>
-                                        <Stack>
-                                            <RadioGroup 
-                                            value={order} onChange={(e) => handlePriceChange(e)}
+                                            <Radio size='md' colorScheme='green' value="htl"
                                             >
-                                                <Radio size='md' colorScheme='green' value="desc"
-                                                >
-                                                    Price - High to Low
-                                                </Radio>
-                                                <Radio size='md' colorScheme='green' value="asc"
-                                                >
-                                                    Price - Low to High
-                                                </Radio>
-                                            </RadioGroup>
-                                        </Stack>
-                                    </AccordionPanel>
+                                                Price - High to Low
+                                            </Radio>
+                                            <Radio size='md' colorScheme='green' value="lth"
+                                            >
+                                                Price - Low to High
+                                            </Radio>
+                                        </RadioGroup> */}
+                                        <Select onChange={handleSort} variant='unstyled'>
+                                            <option value=''>Sort By Price</option>
+                                            <option value='htl'>High to Low</option>
+                                            <option value='lth'>Low to High</option>
+                                        </Select>
+                                        value=''
 
-                                </AccordionItem>
+                                    </Stack>
+                                </AccordionPanel>
 
-                            </Accordion>
+                            </AccordionItem>
 
-                            <Box pl={'5'} mt={'5'}>
-                                <Button type='submit' isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
-                                    onClick={() =>
-                                        toast({
-                                            position: 'bottom-left',
-                                            isClosable: true,
-                                            render: () => (
-                                                <Box textAlign={'center'} color='white' p={3} w={250} bg='#8BC34A'>
-                                                    Applied
-                                                </Box>
-                                            ),
-                                        })
-                                    }
-                                >Apply</Button>
-                                <Button w='90px' colorScheme='teal' variant='outline'>Clear</Button>
-                            </Box>
-                        </form>
+                        </Accordion>
+
+                        <Box pl={'5'} mt={'5'}>
+                            <Button type='submit' isLoading={isLoading} w='90px' mr='15px' colorScheme='teal' variant='outline'
+                                onClick={handleSearchClick}
+
+                            >Apply</Button>
+                            <Button w='90px' colorScheme='teal' variant='outline'
+                            // onClick={handleClearButtonClick}
+                            >Clear</Button>
+                        </Box>
+
 
 
                         {/* Just to Check */}
@@ -453,16 +477,25 @@ export const WomenSection = () => {
 
                     {/* RIGHT panel */}
                     <Box style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', width: '1060px' }}>
-                        {data?.map((ele) => {
-                            return (
+                
+                        {searchResults.length > 0 ? (
+                            searchResults?.map((ele) => (
                                 <Link to={`/women/${ele.id}`}>
-                                    <Box >
+                                    <Box>
                                         <PageSkeleton key={ele.id} {...ele} />
                                     </Box>
                                 </Link>
+                            ))
+                        ) : (
+                            data?.map((ele) => (
+                                <Link to={`/women/${ele.id}`}>
+                                    <Box>
+                                        <PageSkeleton key={ele.id} {...ele} />
+                                    </Box>
+                                </Link>
+                            ))
+                        )}
 
-                            )
-                        })}
                     </Box>
 
                 </Box >
@@ -484,7 +517,6 @@ export const WomenSection = () => {
                         <FaArrowCircleUp size={30} onClick={scrollToTop} />
                     )}
                 </Box>
-
 
 
             </Box >
