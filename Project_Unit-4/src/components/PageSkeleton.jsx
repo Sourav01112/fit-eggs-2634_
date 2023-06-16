@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { Box, Input, Checkbox, Flex, Text, Image } from '@chakra-ui/react'
+import { Box, Input, Checkbox, Flex, Text, Image, Button } from '@chakra-ui/react'
 
 import { AddIcon } from '@chakra-ui/icons'
 import { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from "@chakra-ui/react";
@@ -16,7 +16,7 @@ export const PageSkeleton = ({ id, image, name, category, price, hover_image }) 
         <Box >
             <Box key={id}
                 w={'274px'}
-                h={'500px'}
+                h={'580px'}
                 maxW="sm"
                 overflow="hidden"
                 mt={'5px'}
@@ -48,9 +48,17 @@ export const PageSkeleton = ({ id, image, name, category, price, hover_image }) 
                             {price}
                         </Text>
                     </Flex>
+
+                    <Button>Rating</Button>
+
                     <Text color={'#EB8D7C'}>
                         Member Discount ₹ 50
                     </Text>
+
+                    <Button>VIEW</Button>
+                    <Button>ADD TO CART</Button>
+
+
 
                 </Box>
             </Box>

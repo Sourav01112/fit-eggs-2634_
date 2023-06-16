@@ -1,4 +1,4 @@
-import { Navbar } from './components/Navbar'
+import { MainNavbar } from './components/Navbar'
 import { AllRoutes } from './components/AllRoutes'
 // import { NavbarCart } from './components/Cart/Navbar'
 import '../public/global.css'
@@ -8,7 +8,7 @@ function App() {
 
   return (
     <div className="App">
-      <Navbar />
+      <MainNavbar />
       <AllRoutes />
     </div>
   )

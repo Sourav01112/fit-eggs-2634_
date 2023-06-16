@@ -38,7 +38,7 @@ export const WomenSingleProductPage = () => {
         try {
 
             setLoading(true)
-            let req = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women/${id}`)
+            let req = await fetch(`https://example-cyclick-unit4-clone.onrender.com/${id}`)
             let out = await req.json()
             // console.log(out)
             setRes(out)
@@ -60,7 +60,7 @@ export const WomenSingleProductPage = () => {
         try {
 
             setLoading(true)
-            let req = await fetch(`https://extinct-dove-jumpsuit.cyclic.app/women`)
+            let req = await fetch(`https://example-cyclick-unit4-clone.onrender.com/women`)
             let out = await req.json()
             // console.log( 'this is data',out)
             setData(out)

@@ -26,3 +26,7 @@
 body {
     font-family: 'Poppins', sans-serif;
 }
+
+.navbar .navbar-collapse .navbar-nav .nav-link .badge {
+    height: 20px; /* replace with desired height value */
+  }

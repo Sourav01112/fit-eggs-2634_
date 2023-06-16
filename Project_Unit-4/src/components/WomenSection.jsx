@@ -82,7 +82,7 @@ export const WomenSection = () => {
     // ****************DO with Axios**********
 
     const getData = (params = {}) => {
-        return axios.get(`https://extinct-dove-jumpsuit.cyclic.app/women`, {
+        return axios.get(`https://example-cyclick-unit4-clone.onrender.com/women`, {
             params: {
                 _page: params.page,
                 _limit: params.limit,

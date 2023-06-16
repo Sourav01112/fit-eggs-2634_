@@ -8,9 +8,11 @@ import { Navigate } from "react-router-dom";
 import house from '../assets/house.svg'
 import { useAuth0 } from "@auth0/auth0-react";
 import './style/style.css'
+import { Navbar, Container, Dropdown, Badge, Nav } from 'react-bootstrap';
+import { FaShoppingCart, FaUser } from 'react-icons/fa'
 
 
-export const Navbar = () => {
+export const MainNavbar = () => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
@@ -66,7 +68,17 @@ export const Navbar = () => {
                         </Tabs>
                     </Box>
                     <Spacer />
-                    <HStack fontSize={'13px'} spacing='24px' mr='100px'>
+                    {/* <Navbar bg="light">
+                        <Container>
+                            <Navbar.Text className="search">
+                                <FormControl style={{ width: 150 }}
+                                    placeholder="Search"
+
+                                    className="m-auto" />
+                            </Navbar.Text>
+                        </Container>
+                    </Navbar> */}
+                    <HStack fontSize={'13px'} spacing='24px' mr='100px' ml='150px'>
                         <Box style={{ fontFamily: 'Poppins, sans-serif ' }}>TRACK ORDER</Box>
                         <Box style={{ fontFamily: 'Poppins, sans-serif ' }}>CONTACT US</Box>
                         <Box>DOWNLOAD APP</Box>
@@ -122,17 +134,18 @@ export const Navbar = () => {
                         <option value='option3'>Option 3</option>
                     </Select>
 
-                    <Box style={{
-                        display: 'flex', justifyContent: 'space-between',
-                        //  border: '2px solid red', 
-                        width: '1000px', paddingLeft: '100px', paddingRight: '100px'
-                    }}>
 
+
+                    <Box style={{
+                        display: 'flex', justifyContent: 'space-around',
+                        // border: '2px solid red',
+                         height: '15px',
+                        width: '150%', paddingLeft: '10px', paddingRight: '10px'
+                    }}>
 
                         <Popover  >
                             <PopoverTrigger>
-                                <h1><i className="fa-solid fa-user"
-                                    style={{ color: 'rgba(88, 89, 91, 1)' }}></i></h1>
+                                <FaUser color='white' fontSize={'25px'} style={{ color: 'rgba(88, 89, 91, 1)' }} />
                             </PopoverTrigger>
                             <Portal >
                                 <PopoverContent width='180px'>
@@ -154,7 +167,19 @@ export const Navbar = () => {
                         </Popover>
 
 
-                        <h1><i className="fa-sharp fa-solid fa-bag-shopping" style={{ color: 'rgba(88, 89, 91, 1)' }}></i>  </h1>
+                        {/* <h1><i className="fa-sharp fa-solid fa-bag-shopping" style={{ color: 'rgba(88, 89, 91, 1)' }}></i>  </h1> */}
+
+                        <Nav>
+                            <Dropdown >
+                                <Dropdown.Toggle variant="success" id="dropdown-basic">
+                                    <FaShoppingCart  backgroundColor='red' fontSize={'20px'} />
+                                    <Badge>{10}</Badge>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu style={{ minWidth: 370 }}>
+                                    <span style={{ padding: 10 }}> Cart is Empty</span>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Nav>
                     </Box>
 
                 </Flex >
