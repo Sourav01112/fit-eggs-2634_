@@ -18,6 +18,10 @@
   color: #e71318ed;
 }
 
+.box {
+  width: 274px;
+  height: 580px;
+}
 .box img {
   transition: all 10s ease;
 }
@@ -43,5 +47,8 @@ body {
   }
   .NavBar {
     display: none;
+  }
+  .box {
+    width: 90%;
   }
 }

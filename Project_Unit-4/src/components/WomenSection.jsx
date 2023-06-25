@@ -23,11 +23,19 @@ import {
   Input,
   Checkbox,
   Skeleton,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
   SkeletonCircle,
   SkeletonText,
   IconButton,
   RadioGroup,
   Select,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 import { AddIcon } from "@chakra-ui/icons";
@@ -38,6 +46,7 @@ import { Spinner } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import SkeletonModel from "./SkeletonModel";
+import "../components/style/womenSection.css";
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -91,6 +100,8 @@ export const WomenSection = () => {
   );
   const [searchResults, setSearchResults] = useState([]);
   const [sortOrder, setSortOrder] = useState("");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = useRef();
 
   // const [order, setOrder] = useState('')
 
@@ -267,7 +278,7 @@ export const WomenSection = () => {
 
   return (
     <Box>
-      <div>
+      <div className="breadCrumb">
         <img
           src="https://prod-img.thesouledstore.com/public/theSoul/uploads/catalog/category/catban-120230316133819.jpg?format=webp&w=1400&dpr=1.4"
           alt=""
@@ -305,10 +316,43 @@ export const WomenSection = () => {
         </Box>
       </div>
 
-      <Box style={{ display: "flex" }}>
+      {/* Filter Drawer */}
+      <Button className="FilterBtnForMobile" ref={btnRef} colorScheme="teal" onClick={onOpen}>
+        Filter
+      </Button>
+      <Drawer
+        isOpen={isOpen}
+        placement="right"
+        onClose={onClose}
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Create your account</DrawerHeader>
+
+          <DrawerBody>
+            <Input placeholder="Type here..." />
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="blue">Save</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      {/* Filter Drawer */}
+
+      <Box
+        // style={{ display: "flex" }}
+        className="womenContainer"
+      >
         {/* LEFT side panel */}
 
         <Box
+          className="filter"
           w={"260px"}
           ml="10px"
           mr="15px"
@@ -317,6 +361,7 @@ export const WomenSection = () => {
           position="sticky"
           top={0}
           bg="white"
+          // bg="white"
           shadow="md"
           h={"750px"}
           // For the scrollbar on the functionality part
@@ -495,13 +540,7 @@ export const WomenSection = () => {
         </Box>
 
         {/* RIGHT panel */}
-        <Box
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4,1fr)",
-            width: "1060px",
-          }}
-        >
+        <Box className="ShopCardContainer">
           {searchResults.length > 0
             ? searchResults.map((ele) => (
                 <Link to={`/women/${ele.id}`} key={ele.id}>
@@ -522,7 +561,12 @@ export const WomenSection = () => {
         </Box>
       </Box>
 
-      <Box display="flex" justifyContent="center" ml={"300px"}>
+      <Box 
+    
+      className="pagination"
+      // display="flex" justifyContent="center" 
+      // ml={"300px"}
+      >
         <Pagination
           page={page}
           totalCount={totalCount}

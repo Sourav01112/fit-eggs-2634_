@@ -1,0 +1,45 @@
+.ShopCardContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 1060px;
+}
+/* .breadCrumb{
+
+} */
+.womenContainer {
+  display: flex;
+}
+.FilterBtnForMobile {
+  display: none !important;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-left: 300px;
+  margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .ShopCardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 1060px;
+  }
+  .filter {
+    display: none;
+  }
+  .womenContainer {
+    padding: 12px;
+  }
+  .breadCrumb {
+    margin-left: -200px;
+  }
+  .FilterBtnForMobile {
+    display: block !important;
+  }
+  .pagination {
+    margin-left: 40px;
+    margin-bottom: 20px;
+  }
+}
