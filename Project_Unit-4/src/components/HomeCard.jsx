@@ -1,12 +1,11 @@
-import React from 'react'
+import React from "react";
+import "../components/style/homepage.css";
 
 export const HomeCard = ({ src }) => {
-    // This is HomePage big boxes card
-    return (
-        <div  style={{marginRight: '20px'}}>
-            <img  
-            style={{width:'500px'}} src={src} />
-        </div>
-    )
-}
-
+  // This is HomePage big boxes card
+  return (
+    <div className="homCardContainer">
+      <img src={src} />
+    </div>
+  );
+};

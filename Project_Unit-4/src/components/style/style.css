@@ -1,32 +1,47 @@
 .red_banner {
-    display: flex;
-    justify-content: center;
-    border: 2px solid red;
-    width: 1380px;
-    height: 62px;
-    margin: auto;
-    color: white;
-
+  display: flex;
+  justify-content: center;
+  border: 2px solid red;
+  width: 1380px;
+  height: 62px;
+  margin: auto;
+  color: white;
 }
 
-.footerFont>p {
-    color: #58606B;
-    margin-top: 5px;
-    font-weight: 700;
+.footerFont > p {
+  color: #58606b;
+  margin-top: 5px;
+  font-weight: 700;
 }
 
 .tagColor {
-    color: #E71318ed;
+  color: #e71318ed;
 }
 
 .box img {
-    transition: all 10s ease;
+  transition: all 10s ease;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .navbar .navbar-collapse .navbar-nav .nav-link .badge {
-    height: 20px; /* replace with desired height value */
+  height: 20px; /* replace with desired height value */
+}
+.textInTemp {
+  padding-top: 10px;
+  font-size: 15px;
+}
+
+@media only screen and (max-width: 768px) {
+  .tempBanner {
+    height: 40px;
   }
+  .textInTemp {
+    font-size: 15px;
+  }
+  .NavBar {
+    display: none;
+  }
+}

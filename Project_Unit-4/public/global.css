@@ -1,3 +1,32 @@
-body {
-    font-family: 'Open Sans', sans-serif !important;
+body,
+html {
+  font-family: "Open Sans", sans-serif !important;
+  overflow-x: hidden;
 }
+/* App {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  overflow: hidden;
+} */
+/******** ScrollBar  Modification ******/
+::-webkit-scrollbar {
+  width: 7px;
+  display: none;
+}
+/* track */
+::-webkit-scrollbar-track {
+  /* background-color: black; */
+  background-color: white;
+}
+/* handler */
+::-webkit-scrollbar-thumb {
+  /* background-color: rgba(219, 69, 219, 0.8); */
+  background-color: red;
+  border-radius: 12px;
+}
+::-webkit-scrollbar-thumb:hover {
+  /* background-color: rgba(29, 17, 138, 0.6); */
+  background-color: red;
+  border-radius: 12px;
+}
+/******** ScrollBar  Modification ENDS ******/
